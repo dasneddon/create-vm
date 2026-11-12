@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 clear
+MAX_CORES=$(nproc)
 DEFAULT_NAME="$(date +%Y-%m-%d)_at_$(date +%H:%M:%S)"
 VM_NETWORK="default"
 while true; do
@@ -16,13 +17,13 @@ while true; do
         echo "Error: RAM must be between 1 and 8192 MB."
     done
     while true; do
-        read -r -p "CPUs [2]: " VM_CPUS
+        read -r -p "CPUs [2] (max $MAX_CORES): " VM_CPUS
         VM_CPUS="${VM_CPUS:-2}"
-        if [[ "$VM_CPUS" =~ ^[1-6]$ ]]; then
+        if [[ "$VM_CPUS" =~ ^[1-9][0-9]*$ ]] && (( VM_CPUS >=1 && VM_CPUS <=MAX_CORES )); then
             break
         fi
 
-        echo "Error: CPU count must be between 1 and 6."
+        echo "Error: CPU count must be between 1 and $MAX_CORES."
     done
     while true; do
         read -r -p "Disk size (GB) [30]: " VM_DISK
@@ -76,6 +77,10 @@ while true; do
             VM_OSINFO="name=$VM_OS"
     fi
 
+    read -r -p "Plaintext - Eight Characters Max - VNC Password [password]: " PASSWORD
+    PASSWORD=${PASSWORD:-password}
+    PASSWORD=${PASSWORD:0:8}
+
     echo 
     echo "Virtual Machine Setup"
     echo "---------------------"
@@ -88,6 +93,7 @@ while true; do
     echo "Firmware: $VM_FIRMWARE"
     echo "ISO: $VM_ISO"
     echo "Guest OS: $VM_OS"
+    echo "VNC Password: $PASSWORD"
     echo "---------------------"
     read -r -p "Accept? Type 'yes' to confirm or 'quit' to quit: " CONFIRM
         if [[ "${CONFIRM^^}" == "YES" ]]; then
@@ -112,7 +118,7 @@ VM_ARGS=(
     --disk "size=$VM_DISK,format=qcow2,bus=virtio"
     --boot "$VM_BOOT"
     --osinfo "$VM_OSINFO"
-    --graphics vnc,listen=127.0.0.1,passwd=dsneddon
+    --graphics vnc,listen=127.0.0.1,passwd=$PASSWORD
     --noautoconsole
     --cdrom "$VM_ISO"
     --cpu host-passthrough
