@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-only
+#
+# This program is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# version 3, as published by the Free Software Foundation.
+#
+# This program is distributed WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A
+# PARTICULAR PURPOSE. See the GNU General Public License for details.
+#
+# See the LICENSE file for the full license text.
 clear
 MAX_CORES=$(nproc)
 DEFAULT_NAME="$(date +%Y-%m-%d)_at_$(date +%H:%M:%S)"
