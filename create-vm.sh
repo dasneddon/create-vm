@@ -48,17 +48,21 @@ while true; do
     while true; do
         read -r -p "Firmware (UEFI/BIOS) [UEFI]: " VM_FIRMWARE
         VM_FIRMWARE="${VM_FIRMWARE:-UEFI}"
-        if [[ "${VM_FIRMWARE^^}" == "UEFI" ]]; then
-            VM_BOOT="uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no"
-            break
-        elif [[ "${VM_FIRMWARE^^}" == "BIOS" ]]; then
-            VM_BOOT="firmware=bios"
-            break
-        fi
 
-        echo "Error: Enter UEFI or BIOS."
+        case "${VM_FIRMWARE^^}" in
+            UEFI)
+                VM_BOOT="uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=no"
+                break
+                ;;
+            BIOS)
+                VM_BOOT="cdrom,hd"
+                break
+                ;;
+            *)
+                echo "Error: Enter UEFI or BIOS."
+                ;;
+        esac
     done
-
     while true; do
         read -r -p "ISO filename or path (quit to exit), default folder is /var/lib/libvirt/boot/: " VM_ISO_INPUT
 
